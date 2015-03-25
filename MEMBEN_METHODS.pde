@@ -1,9 +1,9 @@
-void handleMemBenFile(String filename){
-  String[] lines = loadStrings(filename);
+void handleMemBenFile(File file){
+  String[] lines = loadStrings(file.getAbsolutePath());
   
-  for(int i = 0; i < lines.length; i++){
-    TableRow row = memBenTable.addRow();
-      
+  TableRow row = memBenTable.addRow();
+  
+  for(int i = 0; i < lines.length; i++){  
     // This is a S_int val
     if( lines[i].startsWith("S_int") ){
       float s_int = getLineFloatVal(lines[i]);
@@ -22,7 +22,7 @@ void handleMemBenFile(String filename){
       row.setFloat("us_int", us_int);
     }
     
-    String name = parseMemBenFilename(filename);
+    String name = parseMemBenFilename(file.getName());
     row.setString("filename", name);
   }
 }

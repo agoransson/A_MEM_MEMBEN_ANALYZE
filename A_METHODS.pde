@@ -1,15 +1,14 @@
-void handleAFile(String filename){
+void handleAFile(File file){
+  String[] lines = loadStrings(file.getAbsolutePath());
   
-  String[] lines = loadStrings(filename);
-  for(int i = 0; i < lines.length; i++){
-    
+  for(int i = 0; i < lines.length; i++){      
     // This is a P_VAL
     if( lines[i].startsWith("P_") ){
       TableRow row = pTable.addRow();
       
       String p = getId(lines[i]);
       int value = getAIntVal(lines[i]);
-      String name = parseAFilename(filename);
+      String name = parseAFilename(file.getName());
       
       row.setString("p", p);
       row.setInt("value", value);
@@ -22,7 +21,7 @@ void handleAFile(String filename){
       
       String v = getId(lines[i]);
       int value = getAIntVal(lines[i]);
-      String name = parseAFilename(filename);
+      String name = parseAFilename(file.getName());
       
       row.setString("v", v);
       row.setInt("value", value);

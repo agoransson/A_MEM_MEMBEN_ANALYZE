@@ -1,5 +1,3 @@
-File dir; 
-File [] files;
 
 Table pTable;
 Table vTable;
@@ -8,41 +6,63 @@ Table memBenTable;
 
 Table out;
 
+PFont font;
+
+String loadedDir = "asd";
+
+StringBuilder sb = new StringBuilder();
+
+int scannedFiles = 0;
+
 void setup(){
-  selectFolder("choose a folder containing data files", "folderSelected"); 
+  size(600, 400);
+  font = loadFont("Dialog-13.vlw");
+  textFont(font);
   
-  noLoop();
+  selectFolder("choose a folder containing data files", "folderSelected"); 
 }
 
 void folderSelected(File selection) {
   if (selection == null) {
-    println("Window was closed or the user hit cancel.");
+    sb.append("Window was closed or the user hit cancel.").append("\n");
   } else {
-    dir = new File(selection.getAbsolutePath());
-    files = dir.listFiles();
+    loadedDir = selection.getAbsolutePath();
     
-    setupOutTable();
+    sb.append("Loaded dir: ").append(loadedDir).append("\n");
     
-    setupPTable();
-    setupVTable();
-    setupMemTable();
-    setupMemBenTable();
-    
-    createTables();
-  
-    saveDataTables();
-    
-    findLargestPValue();
-    findLargestVValue();
-    findLargestMemValue();
-    findLargestMemBenValue();
-    
-    saveOutTable(); 
+    analyzeFiles(selection); 
   }
+}
+
+void analyzeFiles(File dir){
+  sb.append("Starting analysis...").append("\n");
+  sb.append("(in dir: ").append(dir.getPath()).append(")\n").append("\n");
+  
+  File[] files = dir.listFiles();
+  
+  setupOutTable();
+  
+  setupPTable();
+  setupVTable();
+  setupMemTable();
+  setupMemBenTable();
+  
+  createTables(files);
+
+  saveDataTables();
+  
+  findLargestPValue();
+  findLargestVValue();
+  findLargestMemValue();
+  findLargestMemBenValue();
+  
+  saveOutTable();
 }
 
 
 void setupOutTable(){
+  sb.append("Setting up table 'out'").append("\n");
+  
   out = new Table();
   
   out.addColumn("Utv.pkt.");
@@ -51,6 +71,8 @@ void setupOutTable(){
 }
 
 void setupPTable(){
+  sb.append("Setting up table 'p'").append("\n");
+  
   pTable = new Table();
   
   pTable.addColumn("p");
@@ -59,6 +81,8 @@ void setupPTable(){
 }
 
 void setupVTable(){
+  sb.append("Setting up table 'v'").append("\n");
+  
   vTable = new Table();
   
   vTable.addColumn("v");
@@ -67,6 +91,8 @@ void setupVTable(){
 }
 
 void setupMemTable(){
+  sb.append("Setting up table 'mem'").append("\n");
+  
   memTable = new Table();
   
   memTable.addColumn("s_int");
@@ -76,6 +102,8 @@ void setupMemTable(){
 }
 
 void setupMemBenTable(){
+  sb.append("Setting up table 'memBen'").append("\n");
+  
   memBenTable = new Table();
   
   memBenTable.addColumn("s_int");
@@ -85,28 +113,39 @@ void setupMemBenTable(){
 }
 
 void draw(){
+  background(0);
+  text(sb.toString(), 12, 12);
   
+  text("Scanned files: " + scannedFiles, width - 152, 12);
 }
 
-void createTables(){
+void createTables(File[] files){
+  sb.append("Populating tables...").append("\n");
+  
   for(int i = 0; i < files.length; i++){
-    String name = getFileName(files[i]);
+    String name = files[i].getName();
     
     if( name.startsWith("A_") ){
-      handleAFile(name);
+      //sb.append("...found 'A_' file ").append(name).append("\n");
+      handleAFile(files[i]);
     }
     
     else if( name.startsWith("Mem_") ){
-      handleMemFile(name);
+      //sb.append("...found 'Mem_' file").append(name).append("\n");
+      handleMemFile(files[i]);
     }
     
     else if( name.startsWith("MemBen_") ){
-      handleMemBenFile(name);
+      //sb.append("...found 'MemBen_' file").append(name).append("\n");
+      handleMemBenFile(files[i]);
     }
+    
+    scannedFiles++;
   }
 }
 
 void findLargestPValue(){
+  sb.append("Finding largest 'P' value").append("\n");
   int largest = 0;
   String name = "";
   
@@ -126,6 +165,7 @@ void findLargestPValue(){
 }
 
 void findLargestVValue(){
+  sb.append("Finding largest 'V' value").append("\n");
   int largest = 0;
   String name = "";
   
@@ -145,6 +185,7 @@ void findLargestVValue(){
 }
 
 void findLargestMemValue(){
+  sb.append("Finding largest 'Mem' value").append("\n");
   float largest = 0;
   String name = "";
   
@@ -164,6 +205,7 @@ void findLargestMemValue(){
 }
 
 void findLargestMemBenValue(){
+  sb.append("Finding largest 'MemBen' value").append("\n");
   float largest = 0;
   String name = "";
   
@@ -177,16 +219,18 @@ void findLargestMemBenValue(){
   
   TableRow v = out.addRow();
   
-  v.setString("Utv.pkt.", "Mem");
+  v.setString("Utv.pkt.", "MemBen");
   v.setString("Värde", Float.toString(largest));
   v.setString("Lastfall", name);
 }
 
 void saveOutTable(){
+  sb.append("Saving 'out' table to 'csv/result.csv'").append("\n");
   saveTable(out, "csv/result.csv");
 }
 
 void saveDataTables(){
+  sb.append("Saving data tables").append("\n");
   saveTable(pTable, "csv/pTable.csv");
   saveTable(vTable, "csv/vTable.csv");
   saveTable(memTable, "csv/memTable.csv");

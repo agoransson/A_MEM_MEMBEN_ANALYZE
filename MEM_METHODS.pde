@@ -1,9 +1,9 @@
-void handleMemFile(String filename){
-  String[] lines = loadStrings(filename);
-  
-  for(int i = 0; i < lines.length; i++){
-    TableRow row = memTable.addRow();
-      
+void handleMemFile(File file){
+  String[] lines = loadStrings(file.getAbsolutePath());
+
+  TableRow row = memTable.addRow();
+
+  for(int i = 0; i < lines.length; i++){    
     // This is a S_int val
     if( lines[i].startsWith("S_int") ){
       float s_int = getLineFloatVal(lines[i]);
@@ -22,7 +22,7 @@ void handleMemFile(String filename){
       row.setFloat("us_int", us_int);
     }
     
-    String name = parseMemFilename(filename);
+    String name = parseMemFilename(file.getName());
     row.setString("filename", name);
   }
 }
